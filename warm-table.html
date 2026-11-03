@@ -115,11 +115,21 @@ html.rm .ink-w,html:not(.js) .ink-w{opacity:1}
 @media (max-width:860px){.perks{grid-template-columns:1fr}.perks-photo{min-height:min(110vw,520px)}}
 
 /* how it works */
-.how{display:grid;grid-template-columns:1fr 1fr;margin-top:clamp(96px,8.9vw,128px)}
+.how{margin-top:clamp(96px,8.9vw,128px)}
+.how-pin{display:grid;grid-template-columns:1fr 1fr}
+/* scroll-driven steps (desktop, motion allowed): the section is tall, the two columns pin, and scrolling walks Choose → Wear → Swap → Return */
+html.how-scroll .how{height:340vh}
+html.how-scroll .how-pin{position:sticky;top:0;height:100vh}
+html.how-scroll .how-dark{min-height:0;height:100%}
+html.how-scroll .how-panel{height:100%;justify-content:center}
+html.how-scroll .how-panel figure{max-height:calc(100vh - 360px)}
+.how-track{position:absolute;left:-20px;top:8px;bottom:8px;width:2px;background:rgba(255,255,255,.22);display:none}
+.how-track i{position:absolute;inset:0;background:#fff;transform:scaleY(0);transform-origin:50% 0;will-change:transform}
+html.how-scroll .how-track{display:block}
 .how-dark{position:relative;min-height:760px;background:#1A1712;color:#fff;overflow:hidden}
 .how-dark img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 40%;filter:grayscale(1) brightness(.7)}
 .how-tabs{position:absolute;left:clamp(24px,4.4vw,64px);bottom:clamp(40px,5vw,72px);display:flex;flex-direction:column;z-index:1}
-.how-tabs [role="tab"]{text-align:left;font-weight:300;font-size:clamp(40px,3.9vw,56px);line-height:1.08;letter-spacing:-.02em;color:rgba(255,255,255,.42)}
+.how-tabs [role="tab"]{text-align:left;font-weight:300;font-size:clamp(40px,3.9vw,56px);line-height:1.08;letter-spacing:-.02em;color:rgba(255,255,255,.42);transition:color var(--t-ui) var(--ease-out)}
 .how-tabs [role="tab"]:hover{color:rgba(255,255,255,.8)}
 .how-tabs [role="tab"][aria-selected="true"]{color:#fff}
 .how-panel{padding:clamp(48px,6.7vw,96px) clamp(24px,4.4vw,64px);display:flex;flex-direction:column;justify-content:center;gap:28px}
@@ -129,7 +139,7 @@ html.rm .ink-w,html:not(.js) .ink-w{opacity:1}
 .how-panel figure{overflow:hidden;border-radius:6px;aspect-ratio:16/10;background:var(--panel)}
 .how-panel figure img{width:100%;height:100%;object-fit:cover}
 @media (max-width:860px){
-  .how{grid-template-columns:1fr}
+  .how-pin{grid-template-columns:1fr}
   .how-dark{min-height:0;height:auto;padding:40px clamp(24px,4.4vw,64px)}
   .how-tabs{position:relative;left:auto;bottom:auto;flex-direction:row;flex-wrap:wrap;gap:4px 20px}
   .how-tabs [role="tab"]{font-size:32px}
@@ -339,9 +349,11 @@ form.invalid .err{opacity:1;transform:none;height:auto}
 
 <section id="how" class="how" data-tabs aria-labelledby="how-h">
   <h2 id="how-h" class="sr">How it works</h2>
+  <div class="how-pin">
   <div class="how-dark">
     <img src="table-how.jpg" alt="" aria-hidden="true" loading="lazy" decoding="async" data-parallax="0.06">
     <div class="how-tabs" role="tablist" aria-label="How it works">
+      <span class="how-track" aria-hidden="true"><i></i></span>
       <button role="tab" type="button" data-tab="choose" aria-selected="true" aria-controls="p-choose" id="t-choose">Choose</button>
       <button role="tab" type="button" data-tab="wear" aria-selected="false" aria-controls="p-wear" id="t-wear" tabindex="-1">Wear</button>
       <button role="tab" type="button" data-tab="swap" aria-selected="false" aria-controls="p-swap" id="t-swap" tabindex="-1">Swap</button>
@@ -365,6 +377,7 @@ form.invalid .err{opacity:1;transform:none;height:auto}
       <div><span>Day 30</span><h3>Send it back, or keep it longer.</h3><p>Each piece is due by day 30. In its last week, extend it another 30 days with one tap.</p></div>
       <figure><img src="step-return.jpg" alt="Gold rings resting in a jewellery box (placeholder photo)" loading="lazy" decoding="async"></figure>
     </div>
+  </div>
   </div>
 </section>
 
@@ -470,5 +483,39 @@ form.invalid .err{opacity:1;transform:none;height:auto}
 
 <script src="motion.js"></script>
 <script src="extras.js"></script>
+<script>
+/* How it works follows the scroll on desktop: the columns pin and each quarter of the section's scroll shows the next step.
+   The step change is the existing 240ms tab transition; the thin track beside the tabs fills continuously with the scroll.
+   Clicking a tab scrolls to that step's place. Phones and reduced motion keep plain tap-to-switch tabs. */
+(function () {
+  var how = document.getElementById('how');
+  if (!how || (window.iconecReduce && window.iconecReduce()) || !window.matchMedia) return;
+  var mq = window.matchMedia('(min-width:861px)');
+  var tabs = [].slice.call(how.querySelectorAll('[role="tab"]')), fill = how.querySelector('.how-track i');
+  var cur = 0, auto = false, queued = false;
+  function range() { var r = how.getBoundingClientRect(); return { top: r.top + window.scrollY, len: Math.max(1, how.offsetHeight - window.innerHeight), r: r }; }
+  function frame() {
+    queued = false;
+    if (!mq.matches) return;
+    var g = range(), p = Math.max(0, Math.min(1, -g.r.top / g.len)), i = Math.min(tabs.length - 1, Math.floor(p * tabs.length));
+    fill.style.transform = 'scaleY(' + p.toFixed(4) + ')';
+    if (i !== cur) { cur = i; auto = true; tabs[i].click(); auto = false; }
+  }
+  function onScroll() { if (!queued) { queued = true; requestAnimationFrame(frame); } }
+  tabs.forEach(function (t, i) {
+    t.addEventListener('click', function () {
+      if (auto || !mq.matches) return;
+      cur = i;
+      var g = range(), y = g.top + g.len * (i + 0.5) / tabs.length;
+      try { window.iconecScrollTo(y, { offset: 0 }); } catch (e) { window.scrollTo({ top: y, behavior: 'smooth' }); }
+    });
+  });
+  function setMode() { document.documentElement.classList.toggle('how-scroll', mq.matches); onScroll(); }
+  mq.addEventListener ? mq.addEventListener('change', setMode) : mq.addListener(setMode);
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onScroll);
+  setMode();
+})();
+</script>
 </body>
 </html>
