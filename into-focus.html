@@ -1,0 +1,382 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Iconec · Real diamonds, worn for a while, then swapped</title>
+<meta name="description" content="A jewellery membership in the UAE. Hold up to three pieces from AED 299 a month.">
+<meta name="theme-color" content="#FFFFFF">
+<meta name="iconec-index" content="index.html">
+<link rel="stylesheet" href="base.css">
+<script>document.documentElement.classList.add('js')</script>
+<style>
+/* A7 · Into focus. Quiet white and grey sheets with one dark band, after augen.pro: things come into focus.
+   Motion map (12 principles, augen.pro's vocabulary):
+   - load: the rivière pulls into focus (blur 24px to 0, scale 1.06 to 1, 1.6s ease-out); headline and copy rise 50ms apart
+   - scroll: the hero stays put and recedes (fades, settles back) while the grey overview sheet slides over it
+   - the overview sentence comes into focus word by word as it scrolls past (opacity + small blur, scroll-linked)
+   - "How a month works" rows brighten as each reaches the reading line; one focal row at a time
+   - the giant "Into focus" word sharpens behind the piece as the section scrolls in (scroll-linked)
+   - the pill nav floats over everything and takes the theme of the section beneath it (colours 300ms)
+   - plans: the switch indicator slides 240ms ease-out, the price arrives in focus (blur 6px to 0, 240ms)
+   - hovering a piece puts its neighbours out of focus (240ms); presses scale .97; reduced motion shows the final state, no blur */
+:root{--ink:#141614;--sub:#5A5E59;--grey:#EEEEEC;--g:#102C0B}
+body{background:#fff;color:var(--ink)}
+.inner{max-width:1120px;margin:0 auto}
+.label{flex:0 0 160px;margin-top:6px;display:flex;flex-direction:column;font-size:13px;line-height:1.35}
+.label span:first-child{color:#6B6F6A}
+.row2{display:flex;flex-wrap:wrap;gap:24px clamp(40px,11vw,160px)}
+.row2>.main{flex:1 1 520px;min-width:0}
+.h2{font-weight:400;font-size:clamp(30px,3.05vw,44px);line-height:1.1;letter-spacing:-.02em}
+.sheet{position:relative;z-index:1}
+
+/* focus-in entrances (time-based, small elements only) */
+html.js [data-reveal]{filter:blur(8px);transform:translate3d(0,16px,0);transition:opacity .7s var(--ease-out),filter .7s var(--ease-out),transform .9s var(--ease-out);transition-delay:var(--d,0ms)}
+html.js [data-reveal].in{filter:none;transform:none}
+html.js [data-reveal].done{will-change:auto}
+
+/* top bar + floating pill nav */
+.top{position:relative;z-index:2;display:flex;justify-content:space-between;align-items:center;padding-top:22px}
+.logo{font-weight:500;font-size:22px;letter-spacing:.18em}
+.get{display:inline-flex;align-items:center;height:40px;padding:0 16px;border-radius:999px;background:var(--g);color:#fff;font-size:14px;transition:background-color var(--t-ui) var(--ease-out),transform var(--t-press) var(--ease-out)}
+.get:hover{background:#1D4415}.get:active{transform:scale(.97)}
+.pill{position:fixed;z-index:40;top:14px;left:50%;transform:translate3d(-50%,0,0);display:flex;align-items:center;gap:2px;padding:4px;border-radius:999px;background:var(--grey);color:var(--ink);font-size:14px;transition:background-color .3s var(--ease-out),color .3s var(--ease-out),opacity .6s var(--ease-out),transform .6s var(--ease-out)}
+html.js .pill{opacity:0;transform:translate3d(-50%,-12px,0)}
+html.js body.ready .pill{opacity:1;transform:translate3d(-50%,0,0)}
+.pill.on-dark{background:#2A2C2A;color:#F4F4F2}
+.pill .mk{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:999px;background:#fff;color:var(--ink);transition:background-color .3s var(--ease-out),color .3s var(--ease-out)}
+.pill.on-dark .mk{background:#3A3C3A;color:#F4F4F2}
+.pill a,.pill button{display:inline-flex;align-items:center;height:32px;padding:0 14px;border-radius:999px;white-space:nowrap;transition:background-color var(--t-ui) var(--ease-out),transform var(--t-press) var(--ease-out)}
+.pill a:hover,.pill button:hover{background:#fff}
+.pill.on-dark a:hover,.pill.on-dark button:hover{background:#3A3C3A}
+.pill a:active,.pill button:active{transform:scale(.97)}
+.pill .m-only{display:none}
+@media (max-width:760px){.pill .d-only{display:none}.pill .m-only{display:inline-flex}.top .get{display:none}}
+
+/* hero: stays put and recedes while the next sheet slides over */
+.hero{position:sticky;top:0;z-index:0;transform-origin:50% 0;padding-top:clamp(72px,7.2vw,104px);padding-bottom:clamp(40px,3.9vw,56px);display:flex;flex-direction:column;gap:clamp(32px,3.9vw,56px);will-change:transform,opacity}
+.hero-img{display:flex;justify-content:center;overflow:hidden}
+/* the hero fills exactly one screen; the photo takes whatever height the headline and copy leave, so short laptop and phone screens see both */
+.hero{height:100vh;height:100svh;min-height:560px}
+.hero-img{flex:1 1 0;min-height:140px;max-height:500px}
+.hero-img img{width:min(100%,760px);height:100%;object-fit:cover;object-position:50% 52%}
+html.js .hero-img img{filter:blur(24px);transform:scale(1.06);opacity:.35;transition:filter 1.6s var(--ease-out),transform 1.6s var(--ease-out),opacity 1.6s var(--ease-out)}
+html.js [data-hero].loaded .hero-img img{filter:none;transform:none;opacity:1}
+.hero-row{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:24px 48px}
+.hero h1{max-width:15em;font-weight:400;font-size:clamp(38px,4.4vw,64px);line-height:1.04;letter-spacing:-.028em}
+.hero-side{display:flex;flex-direction:column;align-items:flex-start;gap:16px;max-width:400px}
+.hero-side p{font-size:clamp(17px,1.4vw,20px);line-height:1.4;color:var(--sub)}
+.b{display:inline-flex;align-items:center;min-height:48px;padding:0 20px;border-radius:999px;font-size:15px;transition:background-color var(--t-ui) var(--ease-out),transform var(--t-press) var(--ease-out)}
+.b:active{transform:scale(.97)}
+.b-ink{background:var(--ink);color:#fff}.b-ink:hover{background:#2A2C2A}
+.b-grey{background:var(--grey)}.b-grey:hover{background:#E2E2DF}
+.b-light{background:#F4F4F2;color:var(--ink)}.b-light:hover{background:#fff}
+
+/* overview sheet */
+.overview{background:var(--grey);padding-top:clamp(96px,11vw,160px);padding-bottom:clamp(96px,11vw,160px)}
+.statement{max-width:21em;font-size:clamp(24px,2.5vw,36px);line-height:1.25;letter-spacing:-.02em}
+.ink-w{opacity:.22;will-change:opacity,filter}
+html.rm .ink-w,html:not(.js) .ink-w{opacity:1}
+.more{display:inline-flex;align-items:center;gap:10px;margin-top:32px;color:var(--g);font-size:15px}
+.more i{display:inline-flex;align-items:center;justify-content:center;width:26px;height:18px;border-radius:999px;box-shadow:inset 0 0 0 1px var(--g);transition:transform var(--t-ui) var(--ease-out),background-color var(--t-ui) var(--ease-out),color var(--t-ui) var(--ease-out)}
+.more:hover i{transform:translate3d(3px,0,0);background:var(--g);color:#fff}
+.terms{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:32px;margin-top:clamp(80px,8.9vw,128px);padding-top:28px;border-top:1px solid rgba(20,22,20,.12)}
+.terms dt{font-size:clamp(30px,2.8vw,40px);letter-spacing:-.025em;line-height:1}
+.terms sup{font-size:.42em;color:var(--g);margin-left:2px;vertical-align:.9em}
+.terms dd{margin-top:8px;font-size:14px;color:var(--sub)}
+@media (max-width:860px){.terms{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* dark process band */
+.dark{background:var(--ink);color:#F4F4F2;padding-top:clamp(96px,11vw,160px);padding-bottom:clamp(96px,11vw,160px)}
+.dark .label span:first-child{color:#9A9E99}
+.steps{border-top:1px solid rgba(244,244,242,.14)}
+.steps li{display:grid;grid-template-columns:56px minmax(0,1fr) minmax(0,1fr);gap:16px 24px;align-items:baseline;padding:28px 0;border-bottom:1px solid rgba(244,244,242,.14);will-change:opacity}
+.steps li span:first-child{font-size:13px;color:#9A9E99}
+.steps b{font-weight:400;font-size:clamp(22px,2.1vw,30px);letter-spacing:-.02em;line-height:1.15}
+.steps li span:last-child{font-size:15px;color:#B4B8B2}
+@media (max-width:760px){.steps li{grid-template-columns:40px 1fr}.steps li span:last-child{grid-column:2}}
+
+/* showcase: giant word sharpens behind the piece */
+.show{position:relative;padding-top:clamp(96px,11vw,160px);padding-bottom:clamp(96px,11vw,160px);text-align:center;overflow:hidden}
+/* every sheet is opaque and margin-free so the pinned hero never shows between them */
+.show .mk2{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:8px;background:var(--ink);color:#fff}
+.show .kick{display:block;margin-top:12px;font-size:15px}
+.stage{position:relative;display:flex;justify-content:center;align-items:center;margin-top:clamp(32px,3.3vw,48px);min-height:clamp(420px,46vw,660px)}
+.giant{position:absolute;left:50%;top:50%;transform:translate3d(-50%,calc(-50% + var(--py,0px)),0);margin:0;white-space:nowrap;font-weight:400;font-size:clamp(56px,15.3vw,220px);line-height:.9;letter-spacing:-.04em;color:#B9C7B6;will-change:filter,opacity;pointer-events:none}
+.stage figure{position:relative;width:min(56vw,360px);aspect-ratio:4/5;border-radius:20px;overflow:hidden}
+.stage figure img{width:100%;height:100%;object-fit:cover}
+/* 3D ring: replaces the photo card when WebGL is available; drifts against the giant word for parallax */
+.stage figure.is-3d{width:min(92vw,640px);aspect-ratio:1/1;border-radius:0;overflow:visible}
+.stage figure.is-3d img{display:none}
+.stage figure.is-3d canvas{position:absolute;inset:0;width:100%;height:100%;transform:translate3d(0,var(--py,0px),0);will-change:transform}
+
+/* pieces: neighbours go out of focus on hover */
+.pieces{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;padding-top:clamp(64px,6.7vw,96px)}
+.p{display:flex;flex-direction:column;gap:12px;transition:filter .24s var(--ease-out),opacity .24s var(--ease-out)}
+.p figure{overflow:hidden;aspect-ratio:4/5}
+.p img{width:100%;height:100%;object-fit:cover}
+.p span{display:flex;justify-content:space-between;gap:12px;font-size:15px}
+.p span span{color:#6B6F6A}
+@media (hover:hover){.pieces:hover .p{filter:blur(3px);opacity:.55}.pieces .p:hover,.pieces .p:focus-visible{filter:none;opacity:1}}
+@media (max-width:860px){.pieces{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.cats{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:16px;margin-top:40px}
+.cats div{display:flex;flex-wrap:wrap;gap:6px;font-size:14px}
+.chip{display:inline-flex;align-items:center;height:36px;padding:0 14px;border-radius:999px;box-shadow:inset 0 0 0 1px var(--g);color:var(--g);transition:background-color var(--t-ui) var(--ease-out),color var(--t-ui) var(--ease-out),transform var(--t-press) var(--ease-out)}
+.chip:hover,.chip.on{background:var(--g);color:#fff}
+.chip:active{transform:scale(.97)}
+
+/* plans */
+.plans{background:var(--grey);padding-top:clamp(96px,11vw,160px);padding-bottom:clamp(96px,11vw,160px)}
+.seg{position:relative;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));width:min(100%,420px);padding:4px;border-radius:999px;background:#fff}
+.seg-ind{position:absolute;top:4px;bottom:4px;left:4px;width:calc((100% - 8px) / 3);border-radius:999px;background:var(--ink);transition:transform .24s var(--ease-out)}
+.seg button{position:relative;height:40px;border-radius:999px;text-align:center;font-size:14px;transition:color .24s var(--ease-out),transform var(--t-press) var(--ease-out)}
+.seg button[aria-checked="true"]{color:#fff}
+.seg button:active{transform:scale(.97)}
+.price-block{display:flex;flex-direction:column;gap:14px;margin-top:36px}
+.gems{display:flex;align-items:center;gap:14px;font-size:14px;color:var(--sub)}
+.gems i{display:block;width:14px;height:14px;transform:rotate(45deg);box-shadow:inset 0 0 0 1.5px rgba(20,22,20,.3)}
+.gems i.on{background:var(--g);box-shadow:none}
+.gems i.pop{animation:gem .3s cubic-bezier(.175,.885,.32,1.275) both;animation-delay:var(--gd,0ms)}
+@keyframes gem{from{transform:rotate(45deg) scale(.4);opacity:0}to{transform:rotate(45deg) scale(1);opacity:1}}
+.price{font-size:clamp(48px,5vw,72px);line-height:1;letter-spacing:-.04em}
+.price small{font-size:16px;letter-spacing:0;color:var(--sub)}
+.focus-swap{animation:fsw .24s var(--ease-out) both}
+@keyframes fsw{from{filter:blur(6px);opacity:.3}to{filter:none;opacity:1}}
+
+/* members */
+.ugc{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.ugc a{display:flex;flex-direction:column;gap:10px}
+.ugc figure{aspect-ratio:4/5;border-radius:16px;overflow:hidden;background:var(--grey)}
+.ugc img{width:100%;height:100%;object-fit:cover;transition:transform .28s var(--ease-out)}
+.ugc a:hover img{transform:scale(1.03)}
+.ugc a span{display:flex;justify-content:space-between;gap:8px;font-size:14px}
+@media (max-width:860px){.ugc{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* app + footer (dark) */
+.app{flex:1 0 auto;background:var(--ink);color:#F4F4F2;padding-top:clamp(96px,11vw,160px);padding-bottom:max(clamp(48px,5vw,72px),env(safe-area-inset-bottom,0px))}
+.app-row{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:32px}
+.app h2{max-width:11em;font-weight:400;font-size:clamp(34px,3.6vw,52px);line-height:1.05;letter-spacing:-.025em}
+.foot{margin-top:clamp(96px,9.7vw,140px);padding-top:24px;border-top:1px solid rgba(244,244,242,.14);display:flex;flex-wrap:wrap;justify-content:space-between;gap:24px 40px;font-size:14px}
+.foot nav{display:flex;flex-wrap:wrap;gap:8px 28px}
+.foot nav a{opacity:.85;transition:opacity var(--t-ui) var(--ease-out)}
+.foot nav a:hover{opacity:1}
+
+.chat{position:fixed;right:max(24px,env(safe-area-inset-right,0px));bottom:max(24px,env(safe-area-inset-bottom,0px));z-index:45;display:inline-flex;align-items:center;gap:8px;height:44px;padding:0 16px 0 14px;border-radius:999px;background:var(--grey);color:var(--ink);font-size:14px;box-shadow:0 10px 24px -12px rgba(20,22,20,.45);transition:transform var(--t-press) var(--ease-out),background-color var(--t-ui) var(--ease-out)}
+.chat:hover{background:#fff}.chat:active{transform:scale(.97)}
+@media (max-width:520px){.chat{right:16px;bottom:16px}.rv{left:12px;transform:none}}
+
+[data-menu] .m-top{display:flex;justify-content:space-between;align-items:center;height:56px}
+[data-menu] .m-links{margin-top:24px}
+[data-menu] .b{margin-top:auto;justify-content:center}
+html.rm .hero,html.rm .steps li{transform:none!important;opacity:1!important;filter:none!important}
+html.rm .giant{transform:translate3d(-50%,-50%,0)!important;opacity:1!important;filter:none!important}
+html.rm .hero-img img,html.rm [data-reveal]{filter:none!important}
+</style>
+</head>
+<body style="display:flex;flex-direction:column;min-height:100vh">
+<a class="sr" href="#main">Skip to content</a>
+
+<nav class="pill" data-pill aria-label="Main">
+  <a class="mk" href="#" aria-label="Iconec home" style="padding:0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="12" cy="14" r="6"/><path d="m9.5 5 2.5 3 2.5-3"/></svg></a>
+  <a class="d-only" href="#pieces">Pieces</a>
+  <a class="d-only" href="#how">How it works</a>
+  <a class="d-only" href="#plans">Plans</a>
+  <a class="d-only" href="#">Gift</a>
+  <a class="d-only" href="#contact">Contact</a>
+  <button class="m-only" type="button" data-menu-open aria-expanded="false" aria-controls="menu">Menu</button>
+  <a class="m-only" href="#app" style="background:var(--g);color:#fff">Get the app</a>
+</nav>
+
+<div id="menu" data-menu role="dialog" aria-modal="true" aria-label="Menu">
+  <div class="m-top">
+    <span class="logo">ICONEC</span>
+    <button type="button" data-menu-close aria-label="Close menu" style="display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;margin-right:-10px">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+    </button>
+  </div>
+  <nav class="m-links" aria-label="Menu">
+    <a href="#pieces">Pieces</a>
+    <a href="#how">How it works</a>
+    <a href="#plans">Plans</a>
+    <a href="#">Gift</a>
+    <a href="#contact">Contact</a>
+  </nav>
+  <a class="b b-ink" href="#app">Get the app</a>
+</div>
+
+<main id="main">
+<section class="hero wrap" data-hero data-recede aria-label="Iconec">
+  <div class="top">
+    <a class="logo" href="#" aria-label="Iconec home">ICONEC</a>
+    <a class="get" href="#app">Get the app</a>
+  </div>
+  <div class="hero-img"><img src="piece-riviere.jpg" alt="Double-row diamond rivière in 18k gold on slate" fetchpriority="high"></div>
+  <div class="hero-row">
+    <h1><span class="h-line"><span>Real diamonds, worn for a while,</span></span><span class="h-line"><span>then swapped.</span></span></h1>
+    <div class="hero-side" data-hero-fade>
+      <p>A jewellery membership in the UAE. Hold up to three pieces from AED 299 a month.</p>
+      <div style="display:flex;flex-wrap:wrap;gap:8px">
+        <a class="b b-ink" href="#app">Download the app</a>
+        <a class="b b-grey" href="#how">How it works</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="overview sheet wrap" aria-labelledby="ov-h">
+  <div class="inner">
+    <div class="row2">
+      <h2 id="ov-h" class="label" style="font-weight:400"><span>Overview</span><span>What Iconec is</span></h2>
+      <div class="main">
+        <p class="statement" data-ink="blur">Iconec is a membership for real diamond jewellery. You hold up to three pieces, wear each one for as long as thirty days, and swap any of them for something new from day two.</p>
+        <a class="more" href="#how"><i aria-hidden="true"><svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M2 6h8M7 3l3 3-3 3"/></svg></i>See how a month works</a>
+      </div>
+    </div>
+    <dl class="terms" data-stagger="50">
+      <div data-reveal><dt>Hold<sup>3</sup></dt><dd>Up to three pieces at a time</dd></div>
+      <div data-reveal><dt>Swap<sup>2</sup></dt><dd>From day two, any piece</dd></div>
+      <div data-reveal><dt>Keep<sup>30</sup></dt><dd>Days per piece</dd></div>
+      <div data-reveal><dt>Extend<sup>+30</sup></dt><dd>More days, from day 23</dd></div>
+    </dl>
+  </div>
+</section>
+
+<section id="how" class="dark sheet wrap" data-theme="dark" aria-labelledby="how-h">
+  <div class="inner row2">
+    <h2 id="how-h" class="label" style="font-weight:400"><span>Process</span><span>How a month works</span></h2>
+    <ol class="steps main" data-brighten>
+      <li><span>0.1</span><b>Choose up to three</b><span>Pick one, two or three pieces in the app.</span></li>
+      <li><span>0.2</span><b>Delivered on day 1</b><span>A courier hands them over at the slot you choose.</span></li>
+      <li><span>0.3</span><b>Swap from day 2</b><span>Choose the next piece. We collect one and deliver the other.</span></li>
+      <li><span>0.4</span><b>Return or extend</b><span>Each piece is due by day 30. In its last week, keep it 30 more.</span></li>
+    </ol>
+  </div>
+</section>
+
+<section id="pieces" class="show sheet wrap" aria-labelledby="pieces-h" style="background:#fff">
+  <span class="mk2" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="14" r="6"/><path d="m9.5 5 2.5 3 2.5-3"/></svg></span>
+  <h2 id="pieces-h" class="kick">On rotation this week</h2>
+  <div class="stage">
+    <p class="giant" data-focus-scrub="14" data-ring-parallax="90" aria-hidden="true">Into focus</p>
+    <figure data-reveal data-ring3d data-ring-parallax="-110" role="img" aria-label="Knot ring in 18k gold with diamonds, turning as you scroll"><img src="piece-ring.jpg" alt="Knot ring in 18k gold with diamonds" loading="lazy" decoding="async" style="object-position:50% 20%"></figure>
+  </div>
+  <div class="pieces" data-stagger="50" style="text-align:left">
+    <a class="p" href="#" data-reveal><figure><img src="piece-riviere.jpg" alt="Double rivière" loading="lazy" decoding="async"></figure><span>Double rivière<span>Necklace</span></span></a>
+    <a class="p" href="#" data-reveal><figure><img src="piece-ring.jpg" alt="Knot ring" loading="lazy" decoding="async" style="object-position:50% 16%"></figure><span>Knot ring<span>Ring</span></span></a>
+    <a class="p" href="#" data-reveal><figure><img src="piece-earrings.jpg" alt="Petal drop earrings" loading="lazy" decoding="async" style="object-position:50% 42%"></figure><span>Petal drop earrings<span>Earrings</span></span></a>
+    <a class="p" href="#" data-reveal><figure><img src="piece-pendant.jpg" alt="Marquise spray pendant" loading="lazy" decoding="async" style="object-position:50% 30%"></figure><span>Marquise spray pendant<span>Necklace</span></span></a>
+  </div>
+  <div class="cats" style="text-align:left">
+    <p style="font-size:15px;color:var(--sub)">Every piece is 18k gold set with IGI-certified diamonds.</p>
+    <div><a class="chip on" href="#">Necklaces</a><a class="chip" href="#">Rings</a><a class="chip" href="#">Earrings</a><a class="chip" href="#">Bracelets</a></div>
+  </div>
+</section>
+
+<section id="plans" class="plans sheet wrap" aria-labelledby="plans-h">
+  <div class="inner row2">
+    <h2 id="plans-h" class="label" style="font-weight:400"><span>Membership</span><span>How many at a time</span></h2>
+    <div class="main" data-reveal>
+      <div class="seg" role="radiogroup" aria-label="Pieces at a time" data-seg>
+        <span class="seg-ind" aria-hidden="true"></span>
+        <button type="button" role="radio" aria-checked="false" data-i="0">1 piece</button>
+        <button type="button" role="radio" aria-checked="true" data-i="1">2 pieces</button>
+        <button type="button" role="radio" aria-checked="false" data-i="2">3 pieces</button>
+      </div>
+      <div class="price-block" aria-live="polite" data-price>
+        <span class="price num"><span data-amt>AED 450</span><small> a month</small></span>
+        <span style="font-size:15px;color:var(--g)" data-first>First month AED 151. Your first AED 299 is on us.</span>
+      </div>
+      <p style="margin-top:36px;max-width:30em;font-size:15px;color:var(--sub)">Same rules on every plan: swap from day 2, keep each piece up to 30 days, extend 30 more.</p>
+      <a class="b b-ink" href="#app" style="margin-top:36px">Choose in the app</a>
+    </div>
+  </div>
+</section>
+
+<section class="sheet wrap" aria-labelledby="ugc-h" style="background:#fff;padding-top:clamp(96px,11vw,160px);padding-bottom:clamp(96px,11vw,160px)">
+  <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:16px;margin-bottom:32px">
+    <h2 id="ugc-h" class="h2" data-reveal>Worn by members</h2>
+    <a class="u" href="#" style="font-size:15px">Tag @iconec to be featured</a>
+  </div>
+  <div class="ugc" data-stagger="50">
+    <a href="#" data-reveal><figure><img src="table-split.jpg" alt="Member wearing a gold necklace (placeholder photo)" loading="lazy" decoding="async" style="object-position:50% 30%"></figure><span><span>@[member]</span><span style="color:#6B6F6A">Placeholder</span></span></a>
+    <a href="#" data-reveal><figure><img src="member-b.jpg" alt="Member wearing rings (placeholder photo)" loading="lazy" decoding="async" style="object-position:50% 40%"></figure><span><span>@[member]</span><span style="color:#6B6F6A">Placeholder</span></span></a>
+    <a href="#" data-reveal><figure><img src="member-c.jpg" alt="Member wearing a necklace (placeholder photo)" loading="lazy" decoding="async" style="object-position:50% 40%"></figure><span><span>@[member]</span><span style="color:#6B6F6A">Placeholder</span></span></a>
+    <a href="#" data-reveal><figure><img src="table-app.jpg" alt="Member wearing a gold chain (placeholder photo)" loading="lazy" decoding="async" style="object-position:50% 45%"></figure><span><span>@[member]</span><span style="color:#6B6F6A">Placeholder</span></span></a>
+  </div>
+</section>
+</main>
+
+<section id="app" class="app sheet wrap" data-theme="dark" aria-labelledby="app-h">
+  <div class="inner">
+    <div class="app-row">
+      <h2 id="app-h" data-reveal>Your next piece, in the app.</h2>
+      <div style="display:flex;flex-direction:column;align-items:flex-start;gap:20px;--d:80ms" data-reveal>
+        <a class="b b-light" href="#" style="min-height:52px;padding:0 24px;font-size:15px">Download on the App Store</a>
+        <div style="display:flex;align-items:center;gap:14px">
+          <img src="qr-light.svg" alt="QR code to download the Iconec app (placeholder)" style="width:64px;height:64px" loading="lazy">
+          <span style="font-size:14px;line-height:1.4;color:#9A9E99">Or scan with your<br>phone camera</span>
+        </div>
+      </div>
+    </div>
+    <footer id="contact" class="foot">
+      <span class="logo">ICONEC</span>
+      <nav aria-label="Footer">
+        <a href="#pieces">Pieces</a><a href="#how">How it works</a><a href="#">Gift</a><a href="#">Chat with us</a><a href="#">WhatsApp</a><a href="#">Instagram</a><a href="#" lang="ar">العربية</a>
+      </nav>
+      <span style="color:#9A9E99">© 2026 Iconec, Dubai</span>
+    </footer>
+  </div>
+</section>
+
+<a class="chat" href="#contact">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"/></svg>
+  Chat with us
+</a>
+
+<script src="motion.js"></script>
+<script src="extras.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="ring3d.js"></script>
+<script>
+/* page bits: pill nav arrives after the hero focus pull; plan switch with sliding indicator, focus-in price and popping diamonds */
+(function () {
+  var reduce = window.iconecReduce && window.iconecReduce();
+  setTimeout(function () { document.body.classList.add('ready'); }, reduce ? 0 : 600);
+  /* the hero is taller than most screens: let it scroll until its bottom meets the bottom of the window, then pin it there */
+  var hero = document.querySelector('.hero');
+  function pinHero() { if (hero) hero.style.top = Math.min(0, window.innerHeight - hero.offsetHeight) + 'px'; }
+  pinHero(); window.addEventListener('resize', pinHero); window.addEventListener('load', pinHero);
+  var seg = document.querySelector('[data-seg]');
+  if (!seg) return;
+  var btns = [].slice.call(seg.querySelectorAll('[role="radio"]'));
+  var ind = seg.querySelector('.seg-ind'), block = document.querySelector('[data-price]');
+  var amt = block.querySelector('[data-amt]'), first = block.querySelector('[data-first]');
+  var gems = [].slice.call(block.querySelectorAll('.gems i'));
+  var PLANS = [['AED 299', 'AED 0'], ['AED 450', 'AED 151'], ['AED 599', 'AED 300']];
+  function pick(i, focus) {
+    btns.forEach(function (b, j) { b.setAttribute('aria-checked', j === i ? 'true' : 'false'); b.tabIndex = j === i ? 0 : -1; });
+    if (focus) btns[i].focus();
+    ind.style.transform = 'translate3d(' + (i * 100) + '%,0,0)';
+    amt.textContent = PLANS[i][0];
+    first.textContent = 'First month ' + PLANS[i][1] + '. Your first AED 299 is on us.';
+    gems.forEach(function (g, j) {
+      var was = g.classList.contains('on'), on = j <= i;
+      g.classList.toggle('on', on);
+      g.classList.remove('pop');
+      if (on && !was && !reduce) { g.style.setProperty('--gd', ((j - (i - 1)) * 50) + 'ms'); void g.offsetWidth; g.classList.add('pop'); }
+    });
+    if (!reduce) { [amt.parentElement, first].forEach(function (el) { el.classList.remove('focus-swap'); void el.offsetWidth; el.classList.add('focus-swap'); }); }
+  }
+  btns.forEach(function (b, i) {
+    b.tabIndex = b.getAttribute('aria-checked') === 'true' ? 0 : -1;
+    b.addEventListener('click', function () { pick(i); });
+    b.addEventListener('keydown', function (e) {
+      var d = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+      if (d) { e.preventDefault(); pick((i + d + 3) % 3, true); }
+    });
+  });
+  ind.style.transform = 'translate3d(100%,0,0)';
+})();
+</script>
+</body>
+</html>

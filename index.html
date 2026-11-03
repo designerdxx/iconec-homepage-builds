@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Iconec · Homepage builds</title>
+<link rel="stylesheet" href="base.css">
+<script>document.documentElement.classList.add('js')</script>
+<style>
+body{background:#fff}
+.list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;padding-top:clamp(40px,6vw,96px);padding-bottom:64px}
+.item{display:flex;flex-direction:column;gap:14px}
+.item figure{position:relative;overflow:hidden;border-radius:6px;aspect-ratio:16/10;background:#F3F1EC}
+.item img{width:100%;height:100%;object-fit:cover;transition:transform .28s var(--ease-out)}
+.item:hover img{transform:scale(1.03)}
+.item b{font-weight:400;font-size:20px}
+.item span{color:var(--sub);font-size:15px}
+h1{font-weight:300;font-size:clamp(32px,3.4vw,48px);letter-spacing:-.02em;padding-top:40px}
+@media (max-width:620px){.list{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1 data-reveal>Iconec homepage builds</h1>
+  <div class="list" data-stagger="45">
+    <a class="item" href="story.html" data-reveal><figure><img src="step-choose.jpg" alt="" style="object-position:50% 40%"></figure><b>A · Story first</b><span>White and calm, the story told step by step</span></a>
+    <a class="item" href="passed-on.html" data-reveal><figure><img src="passed-hero.jpg" alt="" style="object-position:50% 38%"></figure><b>A6 · Passed on</b><span>Warm paper, each piece's record of who wore it</span></a>
+    <a class="item" href="into-focus.html" data-reveal><figure><img src="piece-riviere.jpg" alt="" style="object-position:50% 50%"></figure><b>A7 · Into focus</b><span>Quiet and focused, after augen.pro</span></a>
+    <a class="item" href="clean-cut.html" data-reveal><figure><img src="piece-earrings.jpg" alt="" style="object-position:50% 40%"></figure><b>A8 · Clean cut</b><span>White and crisp, after shopify.design</span></a>
+    <a class="item" href="fire.html" data-reveal><figure><img src="fire-hero-diamond.jpg" alt=""></figure><b>A9 · Fire</b><span>Dark, editorial, after topology.vc</span></a>
+    <a class="item" href="warm-table.html" data-reveal><figure><img src="table-hero.jpg" alt=""></figure><b>A10 · Warm table</b><span>Warm and photo-led, after bridgingtables.com</span></a>
+  </div>
+</main>
+<script src="motion.js"></script>
+</body>
+</html>

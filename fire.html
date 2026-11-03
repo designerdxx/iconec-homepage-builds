@@ -1,0 +1,339 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Iconec · Wear the light. Pass it on.</title>
+<meta name="description" content="Real diamond jewellery on a monthly membership in the UAE. Wear a piece, then swap it for the next.">
+<meta name="theme-color" content="#0B0B0B">
+<meta name="iconec-index" content="index.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="base.css">
+<script>document.documentElement.classList.add('js')</script>
+<style>
+/* A9 · Fire. Dark editorial page after topology.vc: one diamond, thin display type, mono labels, hairline grids.
+   Motion map (12 principles):
+   - hero: headline lines rise 50ms apart, the diamond settles from a slight push-in (entrance, ease-out)
+   - "You wear it… then it moves on": the contour field scales down as you scroll into it (scroll-linked, transform only);
+     the two lines fade up at different points, one focal point at a time
+   - sections reveal on entry (opacity + 24px rise, ease-out); grids stagger 45ms per item (cap 50ms)
+   - hover/press: ≤280ms ease-out, arrows nudge 3px, rows shift 8px, presses scale .97
+   - mobile menu: slides in 300ms ease-out over a dimmed scrim, leaves 220ms ease-in */
+:root{--bg:#151515;--bg-2:#0E0E0E;--ink-d:#EDEDEB;--mute:rgba(237,237,235,.6);--soft:rgba(237,237,235,.78);--hair:rgba(237,237,235,.16)}
+body{background:var(--bg);color:var(--ink-d)}
+::selection{background:var(--ink-d);color:var(--bg)}
+:focus-visible{outline-color:var(--ink-d)}
+.mono{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:11px;line-height:1.5;letter-spacing:.08em;text-transform:uppercase}
+.light{font-weight:300}
+.arrow{display:inline-block;transition:transform var(--t-ui) var(--ease-out)}
+a:hover .arrow,.cell:hover .arrow,.row:hover .arrow{transform:translate3d(3px,-3px,0)}
+
+/* header: overlays the hero, turns solid dark once past it, tucks away on fast scroll down */
+.top{display:flex;justify-content:space-between;align-items:center;height:72px;color:#F4F4F2}
+[data-header].scrolled{background:rgba(14,14,14,.94);color:#F4F4F2;box-shadow:0 1px 0 var(--hair);-webkit-backdrop-filter:saturate(1.2);backdrop-filter:saturate(1.2)}
+.logo{font-weight:500;font-size:22px;letter-spacing:.18em}
+.nav{display:flex;gap:28px;font-size:12px;letter-spacing:.06em;text-transform:uppercase}
+.nav a{opacity:.62;transition:opacity var(--t-ui) var(--ease-out)}
+.nav a:hover,.nav a[aria-current]{opacity:1}
+.nav a[aria-current]{text-decoration:underline;text-underline-offset:4px}
+.menu-btn{display:none;align-items:center;justify-content:center;width:44px;height:44px;margin-right:-10px}
+@media (max-width:900px){.nav{display:none}.menu-btn{display:inline-flex}}
+
+/* hero */
+.hero{position:relative;height:max(640px,min(100svh,960px));overflow:hidden;background:#0B0B0B;color:#F4F4F2}
+.hero-img{position:absolute;inset:0;overflow:hidden}
+.hero-img img{position:absolute;left:0;top:-28%;width:140%;max-width:none;height:auto}
+.hero::after{content:"";position:absolute;inset:0;background:linear-gradient(to bottom,rgba(11,11,11,.7) 0%,rgba(11,11,11,0) 15%),linear-gradient(to top,rgba(11,11,11,.9) 0%,rgba(11,11,11,.5) 28%,rgba(11,11,11,0) 55%);pointer-events:none}
+.hero-body{position:absolute;z-index:1;left:0;right:0;bottom:max(28px,env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:28px}
+.hero-row{display:flex;justify-content:space-between;align-items:flex-end;gap:40px}
+.hero h1{font-weight:300;font-size:clamp(56px,9.45vw,136px);line-height:.94;letter-spacing:-.03em}
+.hero-sub{max-width:17em;margin-bottom:10px;font-weight:300;font-size:clamp(18px,1.55vw,22px);line-height:1.3}
+.hero-meta{display:flex;justify-content:space-between;padding-top:14px;border-top:1px solid rgba(244,244,242,.28)}
+@media (max-width:760px){
+  .hero-img img{inset:0;top:0;width:100%;height:100%;object-fit:cover;object-position:41% 40%}
+  .hero-row{flex-direction:column;align-items:flex-start;gap:18px}
+}
+
+/* the story frame */
+.dive{position:relative;height:clamp(520px,56vw,800px);overflow:hidden;background:var(--bg)}
+.dive img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 40%;transform-origin:50% 44%;will-change:transform}
+.dive p{position:absolute;left:16px;right:16px;margin:0;text-align:center;font-weight:300;font-size:clamp(30px,3.9vw,56px);letter-spacing:-.02em;will-change:opacity,transform}
+.dive .one{top:43.5%;margin-top:-.6em;color:#fff}
+.dive .two{bottom:7%;color:var(--ink-d)}
+
+/* sections */
+.sec{padding-top:clamp(112px,13.9vw,200px)}
+.h2{font-weight:300;font-size:clamp(32px,3.35vw,48px);letter-spacing:-.02em;line-height:1.1}
+.sec-head{display:flex;justify-content:space-between;align-items:baseline;gap:16px;flex-wrap:wrap;margin-bottom:28px}
+
+.idea{display:grid;grid-template-columns:1fr 2fr;gap:40px;padding-top:clamp(112px,11vw,160px)}
+.idea-text{max-width:21em;font-weight:300;font-size:clamp(26px,3.05vw,44px);line-height:1.16;letter-spacing:-.015em}
+.facts{display:grid;grid-template-columns:1fr 1fr;gap:40px;margin-top:clamp(56px,6.7vw,96px)}
+.fact h3{display:flex;align-items:baseline;gap:16px;font-weight:300;font-size:clamp(22px,1.95vw,28px);letter-spacing:-.01em}
+.fact p{margin-top:14px;max-width:30em;font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:14px;line-height:1.65;color:rgba(237,237,235,.72)}
+@media (max-width:860px){.idea{grid-template-columns:1fr;gap:20px}.facts{grid-template-columns:1fr;gap:32px}}
+
+.how{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:start}
+.how h2{position:sticky;top:96px;font-weight:300;font-size:clamp(64px,8.35vw,120px);line-height:.95;letter-spacing:-.03em;color:#C9CAC6}
+.steps{display:flex;flex-direction:column;gap:clamp(56px,6.1vw,88px)}
+.step{display:flex;flex-direction:column;gap:12px;max-width:30em}
+.step b{font-weight:300;font-size:clamp(28px,2.8vw,40px);line-height:1.1;letter-spacing:-.015em}
+.step span:last-child{font-weight:300;font-size:clamp(17px,1.4vw,20px);line-height:1.4;color:var(--soft)}
+@media (max-width:860px){.how{grid-template-columns:1fr;gap:48px}.how h2{position:static}}
+
+.grid4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-top:1px solid var(--hair);border-left:1px solid var(--hair)}
+.cell{display:flex;flex-direction:column;gap:18px;padding:16px 16px 22px;border-right:1px solid var(--hair);border-bottom:1px solid var(--hair);transition:background-color var(--t-ui) var(--ease-out)}
+.cell:hover{background:rgba(237,237,235,.03)}
+.cell-top{display:flex;justify-content:space-between;color:var(--mute)}
+.cell figure{overflow:hidden;aspect-ratio:4/5;background:#1E1E1E}
+.cell img{width:100%;height:100%;object-fit:cover;transition:transform .28s var(--ease-out)}
+.cell:hover img{transform:scale(1.03)}
+.cell-name{font-weight:300;font-size:clamp(18px,1.55vw,22px);letter-spacing:-.01em}
+.cell-name sup{font-size:14px;margin-left:4px}
+@media (max-width:860px){.grid4{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+.plans{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-top:1px solid var(--hair);border-bottom:1px solid var(--hair)}
+.plan{display:flex;flex-direction:column;gap:56px;padding:22px 24px 28px}
+.plan:first-child{padding-left:0}
+.plan+.plan{border-left:1px solid var(--hair)}
+.plan-price{font-weight:300;font-size:clamp(56px,5vw,72px);line-height:1;letter-spacing:-.03em}
+.plans-foot{display:flex;justify-content:space-between;align-items:center;gap:24px;flex-wrap:wrap;margin-top:24px}
+.plans-foot p{font-weight:300;font-size:clamp(17px,1.4vw,20px);color:var(--soft)}
+.pill{display:inline-flex;align-items:center;gap:10px;min-height:48px;padding:0 22px;border-radius:999px;background:var(--ink-d);color:var(--bg);font-size:15px;font-weight:500;transition:background-color var(--t-ui) var(--ease-out),transform var(--t-press) var(--ease-out)}
+.pill:hover{background:#fff}
+.pill:active{transform:scale(.97)}
+@media (max-width:760px){.plans{grid-template-columns:1fr}.plan,.plan:first-child{padding:22px 0 28px;gap:28px}.plan+.plan{border-left:0;border-top:1px solid var(--hair)}}
+
+.people{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:24px}
+.person{display:flex;flex-direction:column;gap:14px}
+.person figure{overflow:hidden;aspect-ratio:3/4;background:#1E1E1E}
+.person img{width:100%;height:100%;object-fit:cover;filter:grayscale(1) contrast(1.05);transition:filter .28s var(--ease-out),transform .28s var(--ease-out)}
+.person:hover img{filter:none;transform:scale(1.02)}
+.person b{font-weight:300;font-size:clamp(18px,1.55vw,22px);letter-spacing:-.01em}
+@media (max-width:860px){.people{grid-template-columns:repeat(2,minmax(0,1fr));gap:16px 12px}}
+
+.rows{border-top:1px solid var(--hair)}
+.row{display:grid;grid-template-columns:96px 1fr auto;align-items:center;gap:12px;padding:26px 0;border-bottom:1px solid var(--hair);transition:background-color var(--t-ui) var(--ease-out)}
+.row:hover{background:rgba(237,237,235,.04)}
+.row-t{font-weight:300;font-size:clamp(24px,2.5vw,36px);letter-spacing:-.015em;transition:transform .24s var(--ease-out)}
+.row:hover .row-t{transform:translate3d(8px,0,0)}
+@media (max-width:620px){.row{grid-template-columns:40px 1fr;padding:22px 0}.row-tag{grid-column:2}}
+
+/* app + footer: solid near-black */
+.app{display:flex;flex-direction:column;justify-content:space-between;gap:64px;min-height:720px;margin-top:clamp(112px,11vw,160px);padding-top:clamp(96px,11vw,160px);padding-bottom:max(28px,env(safe-area-inset-bottom,0px));background:var(--bg-2);border-top:1px solid var(--hair)}
+.app-row{display:flex;justify-content:space-between;align-items:flex-end;gap:40px;flex-wrap:wrap}
+.app h2{font-weight:300;font-size:clamp(52px,8.35vw,120px);line-height:.95;letter-spacing:-.03em}
+.qr-card{display:flex;align-items:center;gap:20px;padding:14px;background:#1C1C1C}
+.qr-card img{width:112px;height:112px;background:#fff}
+.foot{display:flex;justify-content:space-between;align-items:center;gap:24px;flex-wrap:wrap;padding-top:14px;border-top:1px solid var(--hair)}
+.foot nav{display:flex;flex-wrap:wrap;gap:8px 24px;font-size:12px;letter-spacing:.06em;text-transform:uppercase}
+.foot nav a{opacity:.62;transition:opacity var(--t-ui) var(--ease-out)}
+.foot nav a:hover{opacity:1}
+@media (max-width:760px){.app{min-height:0;gap:56px}.qr-card img{width:96px;height:96px}}
+
+/* mobile menu (dark) */
+[data-menu]{background:#0E0E0E;color:#F4F4F2}
+[data-menu] .m-top{display:flex;justify-content:space-between;align-items:center;height:56px}
+[data-menu] .m-links{margin-top:24px}
+[data-menu] .m-links a{font-weight:300;border-bottom-color:var(--hair)}
+[data-menu] .pill{margin-top:auto;align-self:flex-start}
+
+/* scroll reveal tweak for the dark page: rows and cells rise a little less */
+html.js .grid4 [data-reveal],html.js .people [data-reveal]{transform:translate3d(0,16px,0)}
+html.js .grid4 [data-reveal].in,html.js .people [data-reveal].in{transform:none}
+html.rm .dive img,html.rm .dive p{transform:none!important;opacity:1!important}
+/* pressed state for whole-card links (12 principles: active scale, subtle) */
+.cell,.person,.row{transition:background-color var(--t-ui) var(--ease-out),transform var(--t-press) var(--ease-out)}
+.cell:active,.person:active,.row:active{transform:scale(.99)}
+</style>
+</head>
+<body>
+<a class="sr" href="#main">Skip to content</a>
+
+<header data-header="overlay" class="wrap">
+  <div class="top">
+    <a class="logo" href="#" aria-label="Iconec home">ICONEC</a>
+    <nav class="nav" aria-label="Main">
+      <a href="#how">How it works</a>
+      <a href="#pieces">Pieces</a>
+      <a href="#plans">Plans</a>
+      <a href="#members">Members</a>
+      <a href="#help">Gift</a>
+      <a href="#help">Help</a>
+      <a href="#app" aria-current="page">Get the app</a>
+    </nav>
+    <button class="menu-btn" type="button" data-menu-open aria-expanded="false" aria-controls="menu" aria-label="Open menu">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M4 8h16M4 16h16"/></svg>
+    </button>
+  </div>
+</header>
+
+<div id="menu" data-menu role="dialog" aria-modal="true" aria-label="Menu">
+  <div class="m-top">
+    <span class="logo">ICONEC</span>
+    <button type="button" data-menu-close aria-label="Close menu" style="display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;margin-right:-10px">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+    </button>
+  </div>
+  <nav class="m-links" aria-label="Menu">
+    <a href="#how">How it works</a>
+    <a href="#pieces">Pieces</a>
+    <a href="#plans">Plans</a>
+    <a href="#members">Members</a>
+    <a href="#help">Gift and help</a>
+  </nav>
+  <a class="pill" href="#app">Get the app <span class="arrow" aria-hidden="true">↗</span></a>
+</div>
+
+<main id="main">
+<section class="hero" data-hero aria-label="Iconec">
+  <div class="hero-img"><img class="kb" src="fire-hero-diamond.jpg" alt="A single round diamond on a black surface, catching the light" fetchpriority="high"></div>
+  <div class="hero-body wrap">
+    <div class="hero-row">
+      <h1><span class="h-line"><span>Wear the light.</span></span><span class="h-line"><span>Pass it on.</span></span></h1>
+      <p class="hero-sub" data-hero-fade>Real diamond jewellery on a monthly membership. Wear a piece, then swap it for the next.</p>
+    </div>
+    <div class="hero-meta mono" data-hero-fade style="--d:560ms">
+      <span>Iconec ©2026 · Dubai</span>
+      <a href="#story">Explore ↓</a>
+    </div>
+  </div>
+</section>
+
+<section id="story" class="dive" aria-label="The idea">
+  <img src="fire-dive.jpg" alt="" aria-hidden="true" data-dive="1.18" loading="lazy" decoding="async">
+  <p class="one" data-scrub-fade="0.22">You wear it…</p>
+  <p class="two" data-scrub-fade="0.42">…then it moves on.</p>
+</section>
+
+<section class="idea wrap" aria-labelledby="idea-h">
+  <h2 id="idea-h" class="mono" style="padding-top:14px;color:var(--mute);font-weight:400">Where the idea comes from</h2>
+  <div>
+    <p class="idea-text" data-reveal>A diamond’s fire is white light, split into colour and sent on. Iconec works the same way: real pieces that move from one member to the next, worn, cared for, and worn again.</p>
+    <div class="facts" data-stagger="45">
+      <div class="fact" data-reveal>
+        <h3><span class="mono" style="color:var(--mute)">01.</span>What you wear</h3>
+        <p>Hold one, two or three pieces at a time. Every one is 18k gold set with IGI-certified diamonds.</p>
+      </div>
+      <div class="fact" data-reveal>
+        <h3><span class="mono" style="color:var(--mute)">02.</span>How it moves</h3>
+        <p>Swap any piece from day 2. A courier collects one and hands over the next, at a slot you choose.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="how" class="how sec wrap" aria-labelledby="how-h">
+  <h2 id="how-h">How it<br>works</h2>
+  <ol class="steps">
+    <li class="step" data-reveal><span class="mono" style="color:var(--mute)">01 · In the app</span><b>Choose up to three.</b><span>Pick one, two or three pieces to hold at a time.</span></li>
+    <li class="step" data-reveal><span class="mono" style="color:var(--mute)">02 · Day 1</span><b>Delivered at your slot.</b><span>A courier hands them over in person.</span></li>
+    <li class="step" data-reveal><span class="mono" style="color:var(--mute)">03 · From day 2</span><b>Swap whenever you like.</b><span>We collect one piece and deliver the next.</span></li>
+    <li class="step" data-reveal><span class="mono" style="color:var(--mute)">04 · Day 30</span><b>Return or extend.</b><span>In its last week, keep a piece 30 more days.</span></li>
+  </ol>
+</section>
+
+<section id="pieces" class="sec wrap" aria-labelledby="pieces-h">
+  <div class="sec-head">
+    <h2 id="pieces-h" class="h2">Pieces on rotation</h2>
+    <a class="mono" href="#">See all pieces <span class="arrow" aria-hidden="true">↗</span></a>
+  </div>
+  <div class="grid4" data-stagger="45">
+    <a class="cell" href="#" data-reveal>
+      <span class="cell-top mono"><span>01.</span><span class="arrow" aria-hidden="true">↗</span></span>
+      <figure><img src="piece-riviere.jpg" alt="Double rivière necklace" loading="lazy" decoding="async" style="object-position:50% 50%"></figure>
+      <span><span class="cell-name" style="display:block">Double rivière</span><span class="mono" style="color:var(--mute)">Necklace · 18k gold</span></span>
+    </a>
+    <a class="cell" href="#" data-reveal>
+      <span class="cell-top mono"><span>02.</span><span class="arrow" aria-hidden="true">↗</span></span>
+      <figure><img src="piece-ring.jpg" alt="Knot ring" loading="lazy" decoding="async" style="object-position:50% 16%"></figure>
+      <span><span class="cell-name" style="display:block">Knot ring<sup>*</sup></span><span class="mono" style="color:var(--mute)">Ring · 18k gold</span></span>
+    </a>
+    <a class="cell" href="#" data-reveal>
+      <span class="cell-top mono"><span>03.</span><span class="arrow" aria-hidden="true">↗</span></span>
+      <figure><img src="piece-earrings.jpg" alt="Petal drop earrings" loading="lazy" decoding="async" style="object-position:50% 42%"></figure>
+      <span><span class="cell-name" style="display:block">Petal drop earrings</span><span class="mono" style="color:var(--mute)">Earrings · 18k gold</span></span>
+    </a>
+    <a class="cell" href="#" data-reveal>
+      <span class="cell-top mono"><span>04.</span><span class="arrow" aria-hidden="true">↗</span></span>
+      <figure><img src="piece-pendant.jpg" alt="Marquise spray pendant" loading="lazy" decoding="async" style="object-position:50% 30%"></figure>
+      <span><span class="cell-name" style="display:block">Marquise spray pendant<sup>*</sup></span><span class="mono" style="color:var(--mute)">Necklace · 18k gold</span></span>
+    </a>
+  </div>
+  <p class="mono" style="margin-top:16px;color:var(--mute)">* New this month</p>
+</section>
+
+<section id="plans" class="sec wrap" aria-labelledby="plans-h">
+  <div class="sec-head">
+    <h2 id="plans-h" class="h2">How many at a time?</h2>
+    <span class="mono" style="color:var(--mute)">Same rules on every plan</span>
+  </div>
+  <div class="plans" data-stagger="45">
+    <div class="plan" data-reveal><span class="mono" style="color:var(--mute)">01 · One piece</span><span><span class="plan-price num" style="display:block">299</span><span class="mono" style="color:var(--mute)">AED / month</span></span></div>
+    <div class="plan" data-reveal><span class="mono" style="color:var(--mute)">02 · Two pieces</span><span><span class="plan-price num" style="display:block">450</span><span class="mono" style="color:var(--mute)">AED / month</span></span></div>
+    <div class="plan" data-reveal><span class="mono" style="color:var(--mute)">03 · Three pieces</span><span><span class="plan-price num" style="display:block">599</span><span class="mono" style="color:var(--mute)">AED / month</span></span></div>
+  </div>
+  <div class="plans-foot">
+    <p>Swap any piece from day 2. Keep each up to 30 days, then extend 30 more.</p>
+    <a class="pill" href="#app">Choose in the app <span class="arrow" aria-hidden="true">↗</span></a>
+  </div>
+</section>
+
+<section id="members" class="sec wrap" aria-labelledby="members-h">
+  <div class="sec-head">
+    <h2 id="members-h" class="h2">Worn by members</h2>
+    <a class="mono" href="#">Tag @iconec to be featured <span class="arrow" aria-hidden="true">↗</span></a>
+  </div>
+  <div class="people" data-stagger="45">
+    <a class="person" href="#" data-reveal><figure><img src="member-aisha.jpg" alt="Aisha wearing Iconec (placeholder photo)" loading="lazy" decoding="async" style="object-position:50% 40%"></figure><span><b style="display:block">Aisha</b><span class="mono" style="display:block">@aisha.layers</span><span class="mono" style="color:var(--mute)">Day 12 of 30 · Knot ring</span></span></a>
+    <a class="person" href="#" data-reveal><figure><img src="member-reem.jpg" alt="Reem wearing Iconec (placeholder photo)" loading="lazy" decoding="async" style="object-position:50% 45%"></figure><span><b style="display:block">Reem</b><span class="mono" style="display:block">@reem.wears</span><span class="mono" style="color:var(--mute)">Day 4 of 30 · Double rivière</span></span></a>
+    <a class="person" href="#" data-reveal><figure><img src="member-dana.jpg" alt="Dana wearing Iconec (placeholder photo)" loading="lazy" decoding="async" style="object-position:50% 35%"></figure><span><b style="display:block">Dana</b><span class="mono" style="display:block">@dana.and.gold</span><span class="mono" style="color:var(--mute)">Day 27 of 30 · Petal drops</span></span></a>
+    <a class="person" href="#" data-reveal><figure><img src="member-fatima.jpg" alt="Fatima wearing Iconec (placeholder photo)" loading="lazy" decoding="async" style="object-position:50% 40%"></figure><span><b style="display:block">Fatima</b><span class="mono" style="display:block">@fatima.styled</span><span class="mono" style="color:var(--mute)">Day 9 of 30 · Marquise spray</span></span></a>
+  </div>
+</section>
+
+<section id="help" class="sec wrap" aria-labelledby="help-h">
+  <h2 id="help-h" class="h2" style="margin-bottom:28px">Gifts and help</h2>
+  <div class="rows" data-stagger="45">
+    <a class="row" href="#" data-reveal><span class="mono" style="color:var(--mute)">01.</span><span class="row-t">Gift a membership</span><span class="row-tag mono" style="color:var(--mute)">Gift card <span class="arrow" aria-hidden="true">↗</span></span></a>
+    <a class="row" href="#" data-reveal><span class="mono" style="color:var(--mute)">02.</span><span class="row-t">Talk to us</span><span class="row-tag mono" style="color:var(--mute)">Live chat <span class="arrow" aria-hidden="true">↗</span></span></a>
+    <a class="row" href="#" data-reveal><span class="mono" style="color:var(--mute)">03.</span><span class="row-t">Questions, answered</span><span class="row-tag mono" style="color:var(--mute)">Help centre <span class="arrow" aria-hidden="true">↗</span></span></a>
+    <a class="row" href="#" data-reveal><span class="mono" style="color:var(--mute)">04.</span><span class="row-t">Message us</span><span class="row-tag mono" style="color:var(--mute)">WhatsApp <span class="arrow" aria-hidden="true">↗</span></span></a>
+  </div>
+</section>
+</main>
+
+<footer id="app" class="app wrap">
+  <div class="app-row">
+    <h2 data-reveal>Your rotation<br>lives in the app.</h2>
+    <div class="qr-card" data-reveal style="--d:80ms">
+      <img src="qr.svg" alt="QR code to download the Iconec app (placeholder)" loading="lazy">
+      <div style="display:flex;flex-direction:column;gap:12px;padding-right:8px">
+        <span class="mono" style="color:var(--mute)">Scan with your<br>phone camera, or</span>
+        <a class="pill" href="#" style="min-height:44px;padding:0 18px;font-size:14px">App Store <span class="arrow" aria-hidden="true">↗</span></a>
+      </div>
+    </div>
+  </div>
+  <div class="foot">
+    <span class="logo">ICONEC</span>
+    <nav aria-label="Footer">
+      <a href="#how">How it works</a>
+      <a href="#pieces">Pieces</a>
+      <a href="#plans">Plans</a>
+      <a href="#help">Gift</a>
+      <a href="#help">Contact</a>
+      <a href="#">Instagram</a>
+      <a href="#">Terms</a>
+      <a href="#">Privacy</a>
+      <a href="#" lang="ar">العربية</a>
+      <a href="#main">Back to top ↑</a>
+    </nav>
+  </div>
+</footer>
+
+<script src="motion.js"></script>
+<script src="extras.js"></script>
+</body>
+</html>
