@@ -57,8 +57,16 @@ a:hover .arrow,.cell:hover .arrow,.row:hover .arrow{transform:translate3d(3px,-3
 }
 
 /* the story frame */
-.dive{position:relative;height:clamp(520px,56vw,800px);overflow:hidden;background:var(--bg)}
-.dive img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 40%;transform-origin:50% 44%;will-change:transform}
+.dive{position:relative;background:var(--bg)}
+.dive-stage{position:relative;height:clamp(520px,56vw,800px);overflow:hidden}
+.dive img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 40%;transform-origin:48.2% 42.5%;will-change:transform}
+.dive-veil{position:absolute;inset:0;background:var(--bg);opacity:0;pointer-events:none}
+/* topology.vc-style dive: the section holds the screen for about three scrolls while the camera flies into the diamond's
+   dark centre; "You wear it…" rushes past, "…then it moves on." waits inside, then the page carries on from the dark */
+html.dive-pin .dive{height:300vh}
+html.dive-pin .dive-stage{position:sticky;top:0;height:100vh;height:100svh}
+html.dive-pin .dive .one,html.dive-pin .dive .two{top:42.5%;bottom:auto;margin-top:-.6em;color:#fff}
+html.dive-pin .dive .two{opacity:0}
 .dive p{position:absolute;left:16px;right:16px;margin:0;text-align:center;font-weight:300;font-size:clamp(30px,3.9vw,56px);letter-spacing:-.02em;will-change:opacity,transform}
 .dive .one{top:43.5%;margin-top:-.6em;color:#fff}
 .dive .two{bottom:7%;color:var(--ink-d)}
@@ -203,9 +211,12 @@ html.rm .dive img,html.rm .dive p{transform:none!important;opacity:1!important}
 </section>
 
 <section id="story" class="dive" aria-label="The idea">
-  <img src="fire-dive.jpg" alt="" aria-hidden="true" data-dive="1.18" loading="lazy" decoding="async">
-  <p class="one" data-scrub-fade="0.22">You wear it…</p>
-  <p class="two" data-scrub-fade="0.42">…then it moves on.</p>
+  <div class="dive-stage">
+  <img src="fire-dive.jpg" alt="" aria-hidden="true" loading="lazy" decoding="async">
+  <span class="dive-veil" aria-hidden="true"></span>
+  <p class="one">You wear it…</p>
+  <p class="two">…then it moves on.</p>
+  </div>
 </section>
 
 <section class="idea wrap" aria-labelledby="idea-h">
@@ -335,5 +346,42 @@ html.rm .dive img,html.rm .dive p{transform:none!important;opacity:1!important}
 
 <script src="motion.js"></script>
 <script src="extras.js"></script>
+<script>
+/* the dive: scroll-linked (the scroll is the clock), transform and opacity only.
+   0–.62  camera flies into the dark centre: scale 1 → 7 on an exponential curve so the speed feels constant, with a slight turn
+   .14–.36 "You wear it…" grows toward you and fades, as if passed on the way in
+   .40–.56 "…then it moves on." settles in from slightly larger, centred in the dark
+   .80–1  the black eases into the page colour under the line, which then scrolls away with the section */
+(function () {
+  var sec = document.getElementById('story');
+  if (!sec || (window.iconecReduce && window.iconecReduce())) return;
+  document.documentElement.classList.add('dive-pin');
+  var img = sec.querySelector('img'), one = sec.querySelector('.one'), two = sec.querySelector('.two'), veil = sec.querySelector('.dive-veil');
+  function c(v) { return v < 0 ? 0 : v > 1 ? 1 : v; }
+  function seg(p, a, b) { return c((p - a) / (b - a)); }
+  function io(t) { return t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2; }
+  function out(t) { return 1 - Math.pow(1 - t, 3); }
+  var queued = false;
+  function frame() {
+    queued = false;
+    var r = sec.getBoundingClientRect(), vh = window.innerHeight;
+    if (r.bottom < -50 || r.top > vh + 50) return;
+    var p = c(-r.top / Math.max(1, sec.offsetHeight - vh));
+    var z = io(seg(p, 0, .62));
+    img.style.transform = 'translate3d(0,0,0) scale(' + Math.pow(7, z).toFixed(4) + ') rotate(' + (z * 7).toFixed(2) + 'deg)';
+    var a = seg(p, .14, .36);
+    one.style.opacity = (1 - out(a)).toFixed(3);
+    one.style.transform = 'translate3d(0,0,0) scale(' + (1 + 1.6 * a * a).toFixed(3) + ')';
+    var b = out(seg(p, .40, .56));
+    two.style.opacity = b.toFixed(3);
+    two.style.transform = 'translate3d(0,0,0) scale(' + (1.12 - .12 * b).toFixed(3) + ')';
+    veil.style.opacity = seg(p, .80, 1).toFixed(3);
+  }
+  function onScroll() { if (!queued) { queued = true; requestAnimationFrame(frame); } }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onScroll);
+  frame();
+})();
+</script>
 </body>
 </html>
